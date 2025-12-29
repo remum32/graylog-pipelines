@@ -1,0 +1,12 @@
+rule "pr_opnsense_fwlog_tcpv6"
+when
+    has_field("message") &&
+    has_field("application_name") &&
+    to_string($message.application_name) == "filterlog" &&
+    regex("^.*,(in|out),6,.*,(?i)tcp,.*$", to_string($message.message)).matches == true
+then
+    let csv_string = to_string($message.message);
+    let csv_header = "rule_number,sub_rule_number,anchor,uuid,src_intf,reason,action,direction,ip-version,tos,ecn,ttl,protocol,protocol-id,length,src_ip,dst_ip,src_port,dst_port,datalength,tcp-flags,sequence,ack,window,urg,tcp-options";
+    let parsed_map = csv_to_map(csv_string, csv_header, ",");
+    set_fields(parsed_map);
+end

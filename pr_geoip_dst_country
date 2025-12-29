@@ -1,0 +1,8 @@
+rule "pr_geoip_dst_country"
+when
+  has_field(field : "dst_ip")
+then
+  let dst_ip_raw = lookup("geoip-lookup-country", to_string($message."dst_ip"));
+  set_field("dst_country", lowercase(to_string(dst_ip_raw["country"].names.en)));
+  set_field("dst_country_iso", lowercase(to_string(dst_ip_raw["country"].iso_code)));
+end

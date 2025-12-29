@@ -1,0 +1,8 @@
+rule "pr_geoip_dst_org"
+when
+  has_field(field : "dst_ip")
+then
+  let dst_ip_raw = lookup("geoip-lookup-asn", to_string($message."dst_ip"));
+  set_field("dst_org", lowercase(to_string(dst_ip_raw["as_organization"])));
+  set_field("dst_asn", lowercase(to_string(dst_ip_raw["as_number"])));
+end
